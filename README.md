@@ -1,7 +1,7 @@
 👥 Integrantes
-- ##André Rovai Andrade Xavier Junior - RM555848##
-- ##Renan de França Gonçalves - RM558413##
-- ##Thiago Almança da Silva - RM558108##
+- André Rovai Andrade Xavier Junior - RM555848
+- Renan de França Gonçalves - RM558413
+- Thiago Almança da Silva - RM558108
 
 
 # FloodGuard IoT
