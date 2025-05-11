@@ -1,19 +1,10 @@
 #include <Arduino.h>
-#include <LoRa.h>
 
 // Definições dos pinos dos sensores
-#define TRIG_PIN 5
-#define ECHO_PIN 18
-#define WATER_LEVEL_PIN 34 // Pino analógico
-
-// Definições do LoRa
-#define LORA_SCK 5
-#define LORA_MISO 19
-#define LORA_MOSI 27
-#define LORA_SS 18
-#define LORA_RST 14
-#define LORA_DIO0 26
-#define BAND 915E6  // Frequência do LoRa no Brasil
+#define TRIG_PIN 33    // JSN-SR04M trigger
+#define ECHO_PIN 32    // JSN-SR04M echo
+#define WATER_LEVEL_PIN 34 // Water‐level sensor analog output (AO)
+#define RAIN_SENSOR_DO_PIN 35    // Water/rain sensor digital output (DO)
 
 void setup() {
   Serial.begin(115200);
@@ -23,16 +14,7 @@ void setup() {
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
   pinMode(WATER_LEVEL_PIN, INPUT);
-
-  // Setup do LoRa
-  Serial.println("Inicializando LoRa...");
-  LoRa.setPins(LORA_SS, LORA_RST, LORA_DIO0);
-
-  if (!LoRa.begin(BAND)) {
-    Serial.println("Falha ao iniciar LoRa!");
-    while (1);
-  }
-  Serial.println("LoRa inicializado com sucesso.");
+  pinMode(RAIN_SENSOR_DO_PIN, INPUT);
 }
 
 float readUltrasonicDistance() {
@@ -50,26 +32,18 @@ float readUltrasonicDistance() {
 }
 
 int readWaterLevel() {
-  int analogValue = analogRead(WATER_LEVEL_PIN);
-  return map(analogValue, 0, 4095, 0, 100); // Mapeia de 0-4095 para 0-100%
+  int raw = analogRead(WATER_LEVEL_PIN);        // 0–4095 on ESP32
+  return map(raw, 0, 4095, 0, 100);             // 0–100%
 }
 
 void loop() {
-  float distance = readUltrasonicDistance();
-  int waterLevel = readWaterLevel();
+  float distance  = readUltrasonicDistance();
+  int   levelPct  = readWaterLevel();
+  bool  rainDetect= digitalRead(RAIN_SENSOR_DO_PIN); // adjust logic if module pulls LOW when wet
 
-  Serial.print("Distância Ultrassônica (cm): ");
-  Serial.println(distance);
-  Serial.print("Nível da água (%): ");
-  Serial.println(waterLevel);
-
-  // Enviar dados via LoRa
-  LoRa.beginPacket();
-  LoRa.print("Distancia:");
-  LoRa.print(distance);
-  LoRa.print(";NivelAgua:");
-  LoRa.print(waterLevel);
-  LoRa.endPacket();
+  // serial output
+  Serial.printf("Dist(cm): %.1f  Level(%%): %d  Rain: %s\n",
+                distance, levelPct, rainDetect ? "YES" : "NO");
 
   delay(10000); // Espera 10 segundos antes de nova leitura
 }

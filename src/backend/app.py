@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import httpx
 import os
+import csv
 
 # Inicializar FastAPI
 app = FastAPI()
@@ -47,7 +48,17 @@ async def get_levels():
     """
     Retorna todos os níveis de água registrados.
     """
-    return {"levels": levels_db}
+    # Read synthetic data from CSV
+    csv_path = os.path.join(os.path.dirname(__file__), "../../data/synthetic/flood_synthetic.csv")
+    levels = []
+    with open(csv_path, newline='') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            levels.append({
+                "timestamp": row["timestamp"],
+                "level_cm": float(row["water_level_cm"])
+            })
+    return {"levels": levels}
 
 @app.post("/levels")
 async def post_level(level: LevelData):

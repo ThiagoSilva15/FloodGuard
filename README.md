@@ -55,15 +55,10 @@ FloodGuard IoT é uma plataforma completa para **monitoramento**, **previsão** 
 Backend
 Clone o repositório e navegue até src/backend:
 
-bash
-Copiar
-Editar
 cd src/backend
 Crie um virtualenv e instale dependências:
 
-bash
-Copiar
-Editar
+
 python -m venv venv
 source venv/bin/activate  # macOS/Linux
 .\\venv\\Scripts\\activate # Windows
@@ -73,14 +68,12 @@ Adicione sua chave da OpenWeather em .env:
 ini
 Copiar
 Editar
-OPENWEATHER_API_KEY=7d472316d7ad76b5d015d96a713bfcd9
+$env:OPENWEATHER_API_KEY = "7d472316d7ad76b5d015d96a713bfcd9"
 Rode o servidor:
 
-bash
-Copiar
-Editar
 uvicorn app:app --reload
 Forecast (Modelos)
+
 Em src/models, ative seu ambiente e instale:
 
 bash
@@ -88,24 +81,14 @@ Copiar
 Editar
 cd src/models
 pip install -r requirements-forecast.txt
+
 Use forecast.py importando seu DataFrame histórico:
 
 python
 Copiar
 Editar
-from forecast import train_model, make_forecast
-import pandas as pd
+python stup.py
 
-df = pd.read_csv('../../data/synthetic/flood_synthetic.csv')
-# Suponha que você tenha uma coluna rainfall_mm no df
-model = train_model(df)
-# Previsão para próximas 24 horas
-df_future = pd.DataFrame({
-  'timestamp': pd.date_range(...),
-  'rainfall_mm': [...]
-})
-result = make_forecast(model, df_future, periods=24)
-print(result.tail())
 Frontend
 Entre na pasta e instale:
 
@@ -119,7 +102,7 @@ Defina a URL da API no .env.local:
 ini
 Copiar
 Editar
-REACT_APP_API_URL=http://localhost:8000
+$env:REACT_APP_API_URL = "http://localhost:8000"
 Rode a aplicação:
 
 bash
